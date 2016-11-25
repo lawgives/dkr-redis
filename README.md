@@ -3,6 +3,12 @@ Redis (with Sentinel and Slave mode)
 
 ## Docker
 
+### Starting default
+
+```
+docker run legalio/redis:3.2.5
+```
+
 ### Starting Master
 
 ```
@@ -12,7 +18,7 @@ docker run legalio/redis:3.2.5 redis-server /etc/redis/master.conf
 ### Starting Sentinel
 
 ```
-docker run legalio/redis:3.2.5 redis-sentinel
+docker run legalio/redis:3.2.5 /opt/bin/redis-sentinel
 ```
 
 You will have to pass in `REDIS_SENTINEL_SERVICE_HOST` and `REDIS_SENTINEL_SERVICE_PORT`. On
