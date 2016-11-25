@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Based on: https://github.com/kubernetes/kubernetes/blob/master/examples/storage/redis/image/run.sh
+
+while true; do
+	# Try to discover redis sentinal via Kubernetes service
+	master=$(redis-cli -h ${REDIS_SENTINEL_SERVICE_HOST} -p ${REDIS_SENTINEL_SERVICE_PORT} --csv SENTINEL get-master-addr-by-name mymaster | tr ',' ' ' | cut -d' ' -f1)
+	if [[ -n ${master} ]]; then
+		master="${master//\"}"
+	else
+		# If it cannot be found, use the current pod ip
+		# This allows the bootstrap pod to run sentinel as
+		# a sidecar container
+		master=$(hostname -i)
+	fi
+
+	# Check that server is up
+	redis-cli -h ${master} INFO
+
+	# IF we can find the master, get out of here and
+	# run sentinel
+	if [[ "$?" == "0" ]]; then
+		break
+	fi
+
+	echo "Connecting to master (${master}) failed.  Waiting..."
+	sleep 10
+done
+
+sentinel_conf=/etc/redis/sentinel.conf
+
+echo "sentinel monitor mymaster ${master} 6379 2" > ${sentinel_conf}
+echo "sentinel down-after-milliseconds mymaster 60000" >> ${sentinel_conf}
+echo "sentinel failover-timeout mymaster 180000" >> ${sentinel_conf}
+echo "sentinel parallel-syncs mymaster 1" >> ${sentinel_conf}
+echo "bind 0.0.0.0" > ${sentinel_conf}
+
+exec su-exec redis /usr/local/bin/redis-sentinel ${sentinel_conf}
