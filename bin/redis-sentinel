@@ -40,4 +40,7 @@ echo "sentinel failover-timeout ${master} 180000" >> ${sentinel_conf}
 echo "sentinel parallel-syncs ${master} 1" >> ${sentinel_conf}
 echo "bind 0.0.0.0" > ${sentinel_conf}
 
+# Redis requires the configuration to be writeable
+chown redis:redis ${sentinel_conf}
+
 exec su-exec redis /usr/local/bin/redis-sentinel ${sentinel_conf}
