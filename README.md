@@ -39,6 +39,12 @@ Other configurations:
   * `REDIS_DOWN_AFTER_MS` sentinel `down-after-milliseconds` setting (default: `60000`)
   * `REDIS_FAILOVER_TIMEOUT` sentinel `failover-timeout` setting (default: `180000`)
   * `REDIS_PARALLEL_SYNCS` sentinel `parllel-syncs` setting (default: `1`)
+  * `REDIS_SLAVE_ANNOUNCE_IP_VAR` (optional) if exist, adds `slave-annnounce-ip` into the redis configuration.
+     Example: `REDIS_SLAVE_ANNOUNCE_IP_VAR=REDIS_0_SERVICE_HOST` will have the slave announce it's IP
+     based on the Kubernetes ip for the redis-0 service
+  * `REDIS_ANNOUNCE_IP_VAR` (optional) if exist, adds `annnounce-ip` into the sentinel configuration.
+     Example: `REDIS_SLAVE_ANNOUNCE_IP_VAR=REDIS_SENTINEL_0_SERVICE_HOST` will have the slave announce it's IP
+     based on the Kubernetes ip for the redis-sentinel-0 service
   
 *IMPORTANT NOTE*: Sentinel will *not* propogate configuration. These settings must be
 kept in sync by a different mechanism. Consider using StatefulSet for Sentinel and

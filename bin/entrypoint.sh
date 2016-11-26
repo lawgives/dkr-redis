@@ -17,6 +17,11 @@ function launch_redis() {
         chown -R redis:redis /data
     fi
 
+    if [[ -n ${REDIS_SLAVE_ANNOUNCE_IP_VAR} ]]; then
+        echo "Setting slave-announce-ip to ${!REDIS_SLAVE_ANNOUNCE_IP_VAR}"
+        echo "slave-announce-ip ${!REDIS_SLAVE_ANNOUNCE_IP_VAR}" >> ${redis_conf}
+    fi
+
     exec su-exec redis redis-server /data/redis.conf --protected-mode no
 }
 
@@ -74,6 +79,11 @@ function launch_sentinel {
     echo "sentinel parallel-syncs ${redis_group} ${parallel_syncs}" >> ${sentinel_conf}
     echo "dir /data" >> ${sentinel_conf}
     echo "bind 0.0.0.0" >> ${sentinel_conf}
+
+    if [[ -n ${REDIS_ANNOUNCE_IP_VAR} ]]; then
+        echo "Setting sentinel announce-ip to ${!REDIS_ANNOUNCE_IP_VAR}"
+        echo "sentinel announce-ip ${!REDIS_ANNOUNCE_IP_VAR}" >> ${sentinel_conf}
+    fi
 
     # Redis requires the configuration to be writeable
     chown -R redis:redis /data
