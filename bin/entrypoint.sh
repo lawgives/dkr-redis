@@ -6,6 +6,7 @@ set -e
 
 
 function launch_redis() {
+    echo "Launching redis"
     redis_conf="/data/redis.conf"
 
     if [[  -e ${redis_conf} ]]; then
@@ -20,6 +21,7 @@ function launch_redis() {
 }
 
 function launch_sentinel {
+    echo "Launching redis sentinel"
     while true; do
         sentinel_conf=/data/sentinel.conf
         redis_group=${REDIS_GROUP:-redis}
@@ -78,7 +80,7 @@ function launch_sentinel {
     exec su-exec redis /usr/local/bin/redis-sentinel ${sentinel_conf}
 }
 
-if [[ "${SENTINEL}" == "true" ]]; then
+if [[ -n "${SENTINEL}" ]]; then
     launch_sentinel
     exit 0
 fi
