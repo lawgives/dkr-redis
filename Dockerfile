@@ -6,8 +6,8 @@ MAINTAINER Ho-Sheng Hsiao <hosh@legal.io>
 RUN apk add -U --no-cache sed bash
 
 ADD etc/redis /etc/redis
-# Redis needs to be able to write to configuration files,
-# and we are running redis under redis user
-RUN chown redis:redis /etc/redis
+ADD bin/entrypoint.sh /opt/bin/entrypoint.sh
 
-ADD bin/redis-sentinel /opt/bin/redis-sentinel
+VOLUME /data
+ENTRYPOINT "/opt/bin/entrypoint.sh"
+CMD [""]
