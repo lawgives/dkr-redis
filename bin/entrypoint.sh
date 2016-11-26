@@ -69,9 +69,9 @@ function launch_sentinel {
     failover_timeout=${REDIS_FAILOVER_TIMEOUT:-180000}
     parallel_syncs=${REDIS_PARALLEL_SYNC:-1}
 
-    echo "sentinel down-after-milliseconds ${master} ${down_after_ms}" >> ${sentinel_conf}
-    echo "sentinel failover-timeout ${master} ${failover_timeout}" >> ${sentinel_conf}
-    echo "sentinel parallel-syncs ${master} ${parallel_syncs}" >> ${sentinel_conf}
+    echo "sentinel down-after-milliseconds ${redis_group} ${down_after_ms}" >> ${sentinel_conf}
+    echo "sentinel failover-timeout ${redis_group} ${failover_timeout}" >> ${sentinel_conf}
+    echo "sentinel parallel-syncs ${redis_group} ${parallel_syncs}" >> ${sentinel_conf}
     echo "dir /data" >> ${sentinel_conf}
     echo "bind 0.0.0.0" >> ${sentinel_conf}
 
