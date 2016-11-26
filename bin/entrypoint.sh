@@ -72,7 +72,8 @@ function launch_sentinel {
     echo "sentinel down-after-milliseconds ${master} ${down_after_ms}" >> ${sentinel_conf}
     echo "sentinel failover-timeout ${master} ${failover_timeout}" >> ${sentinel_conf}
     echo "sentinel parallel-syncs ${master} ${parallel_syncs}" >> ${sentinel_conf}
-    echo "bind 0.0.0.0" > ${sentinel_conf}
+    echo "dir /data" >> ${sentinel_conf}
+    echo "bind 0.0.0.0" >> ${sentinel_conf}
 
     # Redis requires the configuration to be writeable
     chown -R redis:redis /data
