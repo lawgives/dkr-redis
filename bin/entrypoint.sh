@@ -43,7 +43,15 @@ function launch_sentinel {
 
         if [[ -n ${master} ]]; then
             master="${master//\"}"
-        else
+    	elif [[ -n ${REDIS_MASTER_HOST_VAR} ]]; then
+	    # If we still cannot find the master, see if
+	    # we have a REDIS_MASTER_HOST_VAR set. Take the
+	    # value from that.
+	    master=${!REDIS_MASTER_HOST_VAR}
+    	fi
+
+	# Fall back to using hostname
+	if [[ -z ${master} ]]; then
             # If it cannot be found, use the current pod ip
             # This allows the bootstrap pod to run sentinel as
             # a sidecar container
