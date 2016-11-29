@@ -9,5 +9,5 @@ ADD etc/redis /etc/redis
 ADD bin/entrypoint.sh /opt/bin/entrypoint.sh
 
 VOLUME /data
-ENTRYPOINT "/opt/bin/entrypoint.sh"
+ENTRYPOINT ["/opt/bin/entrypoint.sh"]
 CMD [""]
