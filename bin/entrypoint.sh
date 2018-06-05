@@ -85,8 +85,8 @@ function launch_sentinel {
         sleep 10
     done
 
-    echo
-    echo
+    echo ""
+    echo ""
     echo "====================="
     echo "Starting up sentinel with master group: ${redis_group} (${master})"
 
@@ -104,20 +104,23 @@ function launch_sentinel {
     echo "dir /data" >> ${sentinel_conf}
     echo "bind 0.0.0.0" >> ${sentinel_conf}
 
-    if [[ -n ${LOOKUP_ANNOUNCE_IP} ]]; then
+    if [[ -n "${LOOKUP_ANNOUNCE_IP}" ]]; then
         echo "Looking up service ip using hostname $(hostname)"
         announce_ip=$(lookup_announce_ip)
         echo "Setting announce IP to ${announce_ip}"
         echo "sentinel announce-ip ${announce_ip}" >> ${sentinel_conf}
-    elif [[ -n ${REDIS_ANNOUNCE_IP_VAR} ]]; then
+    elif [[ -n "${REDIS_ANNOUNCE_IP_VAR}" ]]; then
+        echo "Using REDIS_ANNOUNCE_IP_VAR ${REDIS_ANNOUNCE_IP_VAR}"
         echo "Setting sentinel announce-ip to ${!REDIS_ANNOUNCE_IP_VAR}"
         echo "sentinel announce-ip ${!REDIS_ANNOUNCE_IP_VAR}" >> ${sentinel_conf}
+    else
+        echo "Using $(hostname -i) for announce ip"
     fi
 
-    echo
+    echo ""
     echo "Final config:"
     echo "========="
-    echo
+    echo ""
     cat ${sentinel_conf}
 
     # Redis requires the configuration to be writeable
