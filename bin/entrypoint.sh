@@ -85,6 +85,9 @@ function launch_sentinel {
         sleep 10
     done
 
+    echo
+    echo
+    echo "====================="
     echo "Starting up sentinel with master group: ${redis_group} (${master})"
 
     # monitor setting needs to bind master ip with the redis group
@@ -111,8 +114,10 @@ function launch_sentinel {
         echo "sentinel announce-ip ${!REDIS_ANNOUNCE_IP_VAR}" >> ${sentinel_conf}
     fi
 
+    echo
     echo "Final config:"
     echo "========="
+    echo
     cat ${sentinel_conf}
 
     # Redis requires the configuration to be writeable
