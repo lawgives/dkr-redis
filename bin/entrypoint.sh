@@ -5,8 +5,10 @@ set -e
 # Based on: https://github.com/docker-library/redis/blob/54ec6b70a3afd6ec62a6549621c5ca1053ece7f5/3.2/alpine/docker-entrypoint.sh
 
 function lookup_announce_ip() {
-    nameserver=$(cat /etc/resolv.conf | awk '/^nameserver/ { print $2 }')
-    nslookup $(hostname) ${nameserver} 2> /dev/null | awk '/^Address/ { print $3 }'
+    #nameserver=$(cat /etc/resolv.conf | awk '/^nameserver/ { print $2 }')
+    # Do not add a nameserver, otherwise we get multiple addresses
+    namespace=$(cat /etc/resolv.conf | awk '/^search/ { print $2 }')
+    nslookup $(hostname).${namespace} 2> /dev/null | awk '/^Address.*svc/ { print $3 }'
 }
 
 function launch_redis() {
