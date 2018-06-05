@@ -34,6 +34,7 @@ in the name of the service)
 
 Other configurations:
 
+  * `REDIS_SERVER_ARGS` will be passed to redis when invoking the server
   * `REDIS_GROUP` seed name of redis group to monitor (default: `redis`)
   * `REDIS_QUORUM` quorum for seed group (default: `2`)
   * `REDIS_DOWN_AFTER_MS` sentinel `down-after-milliseconds` setting (default: `60000`)

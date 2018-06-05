@@ -4,6 +4,10 @@ set -e
 # Based on: https://github.com/kubernetes/kubernetes/blob/master/examples/storage/redis/image/run.sh
 # Based on: https://github.com/docker-library/redis/blob/54ec6b70a3afd6ec62a6549621c5ca1053ece7f5/3.2/alpine/docker-entrypoint.sh
 
+function lookup_announce_ip() {
+    nameserver=$(cat /etc/resolv.conf | awk '/^nameserver/ { print $2 }')
+    nslookup $(hostname) ${nameserver} 2> /dev/null | awk '/^Address/ { print $3 }'
+}
 
 function launch_redis() {
     echo "Launching redis"
@@ -17,12 +21,21 @@ function launch_redis() {
         chown -R redis:redis /data
     fi
 
-    if [[ -n ${REDIS_SLAVE_ANNOUNCE_IP_VAR} ]]; then
+    slave_announce_ip=""
+    if [[ -n ${LOOKUP_ANNOUNCE_IP} ]]; then
+        echo "Looking up service ip using hostname $(hostname)"
+        announce_ip=$(lookup_announce_ip)
+        echo "Setting announce IP to ${announce_ip}"
+        slave_announce_ip="--slave-announce-ip ${announce_ip}"
+    elif [[ -n ${REDIS_SLAVE_ANNOUNCE_IP_VAR} ]]; then
         echo "Setting slave-announce-ip to ${!REDIS_SLAVE_ANNOUNCE_IP_VAR}"
-        echo "slave-announce-ip ${!REDIS_SLAVE_ANNOUNCE_IP_VAR}" >> ${redis_conf}
+        slave_announce_ip="--slave-announce-ip ${!REDIS_SLAVE_ANNOUNCE_IP_VAR}"
     fi
 
-    exec su-exec redis redis-server /data/redis.conf --protected-mode no
+    server_args="/data/redis.conf --protected-mode no ${slave_announce_ip} ${REDIS_SERVER_ARGS}"
+    echo "Invoking redis-server with: ${server_args}"
+
+    exec su-exec redis redis-server ${server_args}
 }
 
 function launch_sentinel {
@@ -88,7 +101,12 @@ function launch_sentinel {
     echo "dir /data" >> ${sentinel_conf}
     echo "bind 0.0.0.0" >> ${sentinel_conf}
 
-    if [[ -n ${REDIS_ANNOUNCE_IP_VAR} ]]; then
+    if [[ -n ${LOOKUP_ANNOUNCE_IP} ]]; then
+        echo "Looking up service ip using hostname $(hostname)"
+        announce_ip=$(lookup_announce_ip)
+        echo "Setting announce IP to ${announce_ip}"
+        echo "sentinel announce-ip ${announce_ip}" >> ${sentinel_conf}
+    elif [[ -n ${REDIS_ANNOUNCE_IP_VAR} ]]; then
         echo "Setting sentinel announce-ip to ${!REDIS_ANNOUNCE_IP_VAR}"
         echo "sentinel announce-ip ${!REDIS_ANNOUNCE_IP_VAR}" >> ${sentinel_conf}
     fi
