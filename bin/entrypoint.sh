@@ -111,6 +111,10 @@ function launch_sentinel {
         echo "sentinel announce-ip ${!REDIS_ANNOUNCE_IP_VAR}" >> ${sentinel_conf}
     fi
 
+    echo "Final config:"
+    echo "========="
+    cat ${sentinel_conf}
+
     # Redis requires the configuration to be writeable
     chown -R redis:redis /data
 
