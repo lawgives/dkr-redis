@@ -1,4 +1,4 @@
-FROM library/redis:3.2.5-alpine
+FROM library/redis:5.0.1-alpine
 MAINTAINER Ho-Sheng Hsiao <hosh@legal.io>
 
 # Base image is the official Redis library, which
